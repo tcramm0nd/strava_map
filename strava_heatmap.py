@@ -56,7 +56,7 @@ def create_heatmap(activities, activity_type = 'all'):
     if type(activities) != pd.core.frame.DataFrame:
         raise ValueError ('No Activities DataFrame Provided')
     
-    with open('activity_types.txt') as f:
+    with open('config.txt') as f:
         activity_types = f.read()
         activity_types = activity_types.split(', ')    
         
