@@ -1,7 +1,6 @@
 import requests
 import json
 import polyline
-from loguru import logger
 import stravauth
 import folium
 from folium.plugins import HeatMap
@@ -96,10 +95,4 @@ def create_heatmap(activities, activity_type = 'all'):
     filename = str(dt.date.today()) + '_' + activity_type + '_activities.html'
     m.save(filename)
     webbrowser.open(filename)
-    
-def main():
-    a = get_activities()
-    create_heatmap(a, activity_type='Run')
-    
-if __name__ == '__main__':
-    main()
+
