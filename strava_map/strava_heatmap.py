@@ -9,7 +9,6 @@ import pandas as pd
 import polyline
 import requests
 from folium.plugins import HeatMap
-from loguru import logger
 
 from . import stravauth
 
@@ -17,12 +16,13 @@ class Map():
     def __init__(self, activity_data=None):
         if activity_data:
             self._load = True
-            
             self.activity_database = pd.read_json(activity_data)
         else:
             self._load = False
             self.get_activities()
+            
         self._process_coordinates()
+        
         with open('config.json') as f:
             self.strava_config = json.load(f)
            
@@ -36,13 +36,10 @@ class Map():
             activity_params = {'access_token': self.client.access_token,
                     'per_page': '100',
                     'page': page}
-            query = urllib.parse.urlencode(activity_params)
             r = requests.get(url + urllib.parse.urlencode(activity_params))
-            logger.debug(query)
             if r.status_code != 200: 
                 print('Refreshing token')
                 self.client.refresh()
-                logger.debug(self.client.access_token)
                 activity_params = {'access_token': self.client.access_token,
                     'per_page': '100',
                     'page': page}
@@ -65,7 +62,7 @@ class Map():
         gradients = {'Run':{0: 'white', .9: 'blue', 1:'cyan'},
                     'Ride': {0: 'white', .9: 'maroon', 1:'red'}
                     }
-        self.center_point()
+        self._center_point()
         self.heatmap = folium.Map(location=self.center,
                         tiles='Stamen Toner',
                         zoom_start=14
@@ -101,14 +98,13 @@ class Map():
                 self.coords[t] = c
         self.activity_types = self.coords.keys()
     
-    def center_point(self):
+    def _center_point(self):
         all_coords = []
         for c in self.coords.values():
             all_coords.extend(c)
         coords = zip(*all_coords)
         self.center = []
         for c in coords:
-            logger.debug(median(c))
             self.center.append(median(c))
                 
     def _select_activities(self, activities):
@@ -120,6 +116,7 @@ class Map():
             pass
         
         return activities
+
     def save_activities(self, path=None):
         if not path:
             filename = str(dt.date.today()) + '_strava_activities.json'
