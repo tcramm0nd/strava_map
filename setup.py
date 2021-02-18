@@ -7,7 +7,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="strava-map",
-    version="0.0.3",
+    version="0.0.4",
     description="Create maps from your Strava Activities",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -21,5 +21,10 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     packages=find_packages(),
+    install_requires=['folium>=0.12.1',
+                      'loguru==0.5.3',
+                      'pandas>=1.2.1',
+                      'polyline>=1.4.0'
+                      ],
     include_package_data=True
 )

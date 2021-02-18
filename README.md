@@ -4,7 +4,7 @@ Downloads strava activities and generates a heatmap for each activity type.
 ## Installation
 `strava_map` can be installed via pip using:
 
-```bash
+```bash 
 pip install strava-map
 ```
 or run directly from a cloned repo
@@ -40,3 +40,8 @@ This will generate a map with different activity types coded as different colors
 ```python
 m.save_activities(path='path/to/directory/')
 ```
+
+## To Do
+- [ ] add KML support
+- [ ] add colorization options
+- [ ] assign gradients to activities
