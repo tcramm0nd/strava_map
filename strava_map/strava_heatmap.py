@@ -22,9 +22,6 @@ class Map():
             self.get_activities()
             
         self._process_coordinates()
-        
-        with open('config.json') as f:
-            self.strava_config = json.load(f)
            
     def get_activities(self):
 
