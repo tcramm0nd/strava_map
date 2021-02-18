@@ -7,7 +7,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="strava-map",
-    version="0.0.4",
+    version="0.0.5",
     description="Create maps from your Strava Activities",
     long_description=README,
     long_description_content_type="text/markdown",
