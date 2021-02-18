@@ -1,2 +1,2 @@
-__version__ = "0.0.2"
-
+from .strava_heatmap import Map
+__version__ = "0.0.3"
