@@ -9,17 +9,15 @@ import datetime as dt
 class ActivityDB():
     def __init__(self, data=None, fetch=False, filename=None):
         if data:
-            self.data = pd.DataFrame(data)
+            self._data = pd.DataFrame(data)
         elif fetch:
-            self.data = pd.DataFram(self.fetch())
+            self._data = pd.DataFram(self.fetch())
         elif filename:
-            self.data = pd.read_json(filename)
+            self._data = pd.read_json(filename)
         else:
-            self.data = pd.DataFrame()
-        
-        # if 'coords' not in self.data.columns and 'map' in self.data.columns:
-        #     self.data['coords'] = self.data['map'].apply(
-        #         lambda x: self._convert_to_coords(x)) 
+            self._data = pd.DataFrame()
+            
+
     
     def fetch(self, client_id=None, client_secret=None, per_page=100):
         client = stravauth.Client(client_id=client_id, client_secret=client_secret)
@@ -70,4 +68,4 @@ class ActivityDB():
         if path:
             filename = path + filename
 
-        self.data.to_json(filename)
+        # self._data.to_json(filename)
