@@ -1,2 +1,3 @@
 from .strava_heatmap import Map
-__version__ = "0.0.5"
+from .activities import ActivityDB
+__version__ = "0.0.5" 

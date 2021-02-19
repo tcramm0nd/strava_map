@@ -3,7 +3,6 @@ import json
 import urllib
 import webbrowser
 from statistics import median
-
 import folium
 import pandas as pd
 import polyline
@@ -13,7 +12,14 @@ from folium.plugins import HeatMap
 from . import stravauth
 
 class Map():
-    def __init__(self, activity_data=None):
+    """A collection of Strava activity data.
+    """    
+    def __init__(self, activity_data):
+        """Initializes a Map instance
+
+        Args:
+            activity_data (str, optional): Path to a saved activities.json file. Defaults to None.
+        """        
         if activity_data:
             self._load = True
             self.activity_database = pd.read_json(activity_data)
@@ -22,37 +28,14 @@ class Map():
             self.get_activities()
             
         self._process_coordinates()
-           
-    def get_activities(self):
-
-        self.client = stravauth.Client()
-        page = 1
-        url = 'https://www.strava.com/api/v3/athlete/activities?'
-        activity_list = []
-        while True:
-            activity_params = {'access_token': self.client.access_token,
-                    'per_page': '100',
-                    'page': page}
-            r = requests.get(url + urllib.parse.urlencode(activity_params))
-            if r.status_code != 200: 
-                print('Refreshing token')
-                self.client.refresh()
-                activity_params = {'access_token': self.client.access_token,
-                    'per_page': '100',
-                    'page': page}
-                r = requests.get(url + urllib.parse.urlencode(activity_params))
-            activities = r.json()
-            activity_list.extend(activities)
-
-            if len(activities) < 100:
-                break
-
-            page += 1
-            
-        print(f'Retrieved {len(activity_list)} total activities')
-        self.activity_database = pd.DataFrame(activity_list)      
-        
+    
     def create_heatmap(self, activities='All'):
+        """Creates a heatmap of Strava activity data
+
+        Args:
+            activities (str or list, optional): A string or list of activities
+                to include in the heatmap. Defaults to 'All'.
+        """        
         
         activities = self._select_activities(activities)
 
@@ -80,6 +63,8 @@ class Map():
         webbrowser.open(filename)
 
     def _process_coordinates(self):
+        """Processes the coordinates for use.
+        """        
         # Decode summary Polyline
         if self._load == False:
             self.activity_database['coords'] = self.activity_database['map'].apply(
@@ -96,6 +81,8 @@ class Map():
         self.activity_types = self.coords.keys()
     
     def _center_point(self):
+        """Finds the center point of all activities
+        """        
         all_coords = []
         for c in self.coords.values():
             all_coords.extend(c)
@@ -105,6 +92,14 @@ class Map():
             self.center.append(median(c))
                 
     def _select_activities(self, activities):
+        """Parses the input of activities
+
+        Args:
+            activities (str or list): A string or list of strings of activity types.
+
+        Returns:
+            list: A list of activities.
+        """        
         if activities not in self.activity_types:
             activities = self.activity_types
         elif isinstance(activities, str):
@@ -115,12 +110,26 @@ class Map():
         return activities
 
     def save_activities(self, path=None):
-        if not path:
-            filename = str(dt.date.today()) + '_strava_activities.json'
-            self.activity_database.to_json(filename)  
+        """Saves downloaded activity data as a JSON file
+
+        Args:
+            path (str, optional): Path to a directory to save activity data. Defaults to None.
+        """
+        
+        filename = str(dt.date.today()) + '_strava_activities.json'
+        if path:
+            filename = path + filename
+        self.activity_database.to_json(filename)
           
 def convert_to_coords(map_data):
+    """Decodes a Strava 'Summary Polyline' encoded for Google Maps.
 
+    Args:
+        map_data (dict): A dictionary containing a geo-data about a strava activity
+
+    Returns:
+        lsit: returns a list of coordinates: [lat,lon]
+    """    
     encoded_polyline = map_data['summary_polyline']
     if encoded_polyline:
         decoded_polyline = polyline.decode(encoded_polyline)
