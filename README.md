@@ -1,5 +1,9 @@
 # strava_map
-Downloads strava activities and generates a heatmap for each activity type.
+[![PyPI](https://img.shields.io/pypi/v/strava-map)](https://pypi.org/project/strava-map/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/strava-map)](https://pypi.org/project/strava-map/)
+[![GitHub License](https://img.shields.io/github/license/tcramm0nd/strava_map)](https://github.com/tcramm0nd/strava_map/blob/main/LICENSE)
+
+Downloads strava activities and generates a heatmap for each activity type. View all your Strava activity data in one map, or just download and save your activity data to edit as you choose.
 
 ## Installation
 `strava_map` can be installed via pip using:

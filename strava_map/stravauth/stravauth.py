@@ -93,6 +93,8 @@ class Client():
         Args:
             path (str, optional): Path to an existing credentials file. Defaults to None.
         """
+        
+        # make filename local
         if path:
             self.path = path
         else:
