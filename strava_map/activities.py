@@ -17,6 +17,16 @@ class ActivityDB():
         else:
             self._data = pd.DataFrame()
             
+        if not self._data.empty:
+            if 'coordinates' not in self._data.columns and 'map' in self._data.columns:
+                self._data['coordinates'] = self._data['map'].apply(
+                    lambda x: self._convert_to_coords(x)) 
+            
+            self._data.dropna(subset=['coordinates'])
+        
+            if 'date' not in self._data.columns:
+                self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
+            self.data = self._data[['name', 'date', 'type', 'coordinates']]
 
     
     def fetch(self, client_id=None, client_secret=None, per_page=100):
@@ -68,4 +78,4 @@ class ActivityDB():
         if path:
             filename = path + filename
 
-        # self._data.to_json(filename)
+        self.data.to_json(filename)
