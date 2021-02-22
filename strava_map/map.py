@@ -13,15 +13,10 @@ from . import stravauth
 
 class Map():
     """A collection of Strava activity data.
-<<<<<<< Updated upstream
-    """    
-    def __init__(self, activity_data):
-        """Initializes a Map instance
-=======
-    Maybe an extension of activity DB?
     """
     def __init__(self, activity_db, activity_types='All', split_by_type=True, start_date=None,
                  end_date=None, heatmap=True, kml=False):
+         
         self.data = activity_db.data
         
         # set the activity types
@@ -38,28 +33,22 @@ class Map():
 
         
         self.center = self._center_point()
->>>>>>> Stashed changes
-
-        Args:
-            activity_data (str, optional): Path to a saved activities.json file. Defaults to None.
-        """        
+   
         if activity_data:
             self._load = True
             self.activity_database = pd.read_json(activity_data)
         else:
-            self._load = False
-            self.get_activities()
-            
-        self._process_coordinates()
-    
-    def create_heatmap(self, activities='All'):
-        """Creates a heatmap of Strava activity data
+            self.activity_types = activity_types
+        
+        self._split = split_by_type
+        
+        self.center = self._center_point()
 
-        Args:
-            activities (str or list, optional): A string or list of activities
-                to include in the heatmap. Defaults to 'All'.
-        """        
-<<<<<<< Updated upstream
+        self.heatmap = folium.Map(location=self.center,
+                tiles='Stamen Toner',
+                zoom_start=14)
+        
+    def create_heatmap(self):     
         
         activities = self._select_activities(activities)
 
@@ -77,28 +66,23 @@ class Map():
                 gradient = gradients[a]
             else:
                 gradient = {0: 'white', 1: 'lawngreen'}
-            feature_group.add_child(HeatMap(self.coords[a], radius=7, blur=5, gradient=gradient))
-=======
-                
+            feature_group.add_child(HeatMap(self.coords[a], radius=7, blur=5, gradient=gradient))   
         heatmap_coordinates = self.coordinates_by_type()
         gradients = self._generate_gradients()
         for a_type, coords in heatmap_coordinates.items():
             feature_group = folium.FeatureGroup(name=a_type, show=True)
             gradient = gradients[a_type]
             feature_group.add_child(HeatMap(coords, radius=7, blur=5, gradient=gradient))
->>>>>>> Stashed changes
             self.heatmap.add_child(feature_group)
             
         self.heatmap.add_child(folium.map.LayerControl())
                 
-        filename = str(dt.date.today()) + '_activity_heatmap.html'
+        filename = str(dt.date.today()) + str(self.activity_types) + '_activity_heatmap.html'
         self.heatmap.save(filename)
         webbrowser.open(filename)
 
-    def _process_coordinates(self):
-        """Processes the coordinates for use.
-<<<<<<< Updated upstream
-        """        
+    def coordinates_by_type(self):
+      
         # Decode summary Polyline
         if self._load == False:
             self.activity_database['coords'] = self.activity_database['map'].apply(
@@ -113,9 +97,8 @@ class Map():
             if len(c) > 0:
                 self.coords[t] = c
         self.activity_types = self.coords.keys()
-=======
-        """     
-        if self._split:  
+ 
+        if self._split:     
             coords = {}
             for t in self.activity_types:
                 a = self.data[self.data['type'] == t]
@@ -125,12 +108,9 @@ class Map():
         else:
             coords = {'All': self.data.apply(pd.Series).stack().reset_index(drop=True)}
         return coords
->>>>>>> Stashed changes
-    
     def _center_point(self):
         """Finds the center point of all activities
         """        
-<<<<<<< Updated upstream
         all_coords = []
         for c in self.coords.values():
             all_coords.extend(c)
@@ -183,12 +163,6 @@ def convert_to_coords(map_data):
         decoded_polyline = polyline.decode(encoded_polyline)
         coords = [list(c) for c in decoded_polyline]
         return coords
-=======
-        all_coords = self.data['coordinates'].apply(pd.Series).stack().reset_index(drop=True)            
-        lat, lon = zip(*all_coords)
-        center = [median(lat), median(lon)]
-        return center
-    
     def _generate_gradients(self):
         gradient_list = [{0: 'white', .9: 'blue', 1:'cyan'},
                          {0: 'white', .9: 'maroon', 1:'red'}
@@ -205,5 +179,3 @@ def convert_to_coords(map_data):
             else:
                 gradients[i] = {0:'white', 1:'black'}
         return gradients
-    
->>>>>>> Stashed changes

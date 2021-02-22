@@ -22,7 +22,6 @@ def test_Map_columns(example_activities):
 def test_map_center(example_activities):
     m = Map(example_activities)
     assert m.center == [40.48683, -79.970605]
-
 @pytest.mark.parametrize('activity_types,expected',
                          [('All',['Run', 'Ride']),
                           ('Run', ['Run']),
