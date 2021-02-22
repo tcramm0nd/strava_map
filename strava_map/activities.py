@@ -11,26 +11,10 @@ class ActivityDB():
         if data:
             self._data = pd.DataFrame(data)
         elif fetch:
-            self._data = pd.DataFram(self.fetch())
+            self._data = pd.DataFrame(self.fetch())
         elif filename:
             self._data = pd.read_json(filename)
         else:
-
-            self.data = pd.DataFrame()
-
-            self._data = pd.DataFrame()
-
-        if not self._data.empty:
-            if 'coordinates' not in self._data.columns:
-                self._data['coordinates'] = self._data['map'].apply(
-                    lambda x: self._convert_to_coords(x)) 
-            
-            if 'date' not in self._data.columns:
-                self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
-                
-            self.data = self._data[['name', 'date', 'type', 'coordinates']]
-            self._data.dropna(subset=['coordinates'])
-
             self._data = pd.DataFrame()
             
         if not self._data.empty:
@@ -43,6 +27,7 @@ class ActivityDB():
             if 'date' not in self._data.columns:
                 self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
             self.data = self._data[['name', 'date', 'type', 'coordinates']]
+
     
     def fetch(self, client_id=None, client_secret=None, per_page=100):
         client = stravauth.Client(client_id=client_id, client_secret=client_secret)
@@ -72,7 +57,8 @@ class ActivityDB():
             
         print(f'Retrieved {len(activity_list)} total activities')
         
-        return activity_list
+        return activity_list 
+        
 
     def _convert_to_coords(self, map_data):
         encoded_polyline = map_data['summary_polyline']
@@ -82,7 +68,6 @@ class ActivityDB():
             return coords
     def save(self, path=None, filename=None):
         """Saves downloaded activity data as a JSON file
-
         Args:
             filename (str, optional): Path to a directory to save activity data. Defaults to None.
         """

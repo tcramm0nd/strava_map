@@ -98,3 +98,4 @@ class Map():
             else:
                 gradients[i] = {0:'white', 1:'black'}
         return gradients
+    
