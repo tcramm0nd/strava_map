@@ -1,23 +1,16 @@
 import datetime as dt
-import json
-import urllib
 import webbrowser
 from statistics import median
+
 import folium
 import pandas as pd
-import polyline
-import requests
 from folium.plugins import HeatMap
 
-from . import stravauth
-
 class Map():
-    """A collection of Strava activity data.
-    Maybe an extension of activity DB?
-    """    
+    """A collection of Strava activity data."""
     def __init__(self, activity_db, activity_types='All', split_by_type=True, start_date=None,
                  end_date=None, heatmap=True, kml=False):
-         
+        
         self.data = activity_db.data
         
         # set the activity types
@@ -64,7 +57,7 @@ class Map():
     def coordinates_by_type(self):
         """Processes the coordinates for use.
         """     
-        if self._split:     
+        if self._split:
             coords = {}
             for t in self.activity_types:
                 a = self.data[self.data['type'] == t]
@@ -79,7 +72,7 @@ class Map():
     def _center_point(self):
         """Finds the center point of all activities
         """        
-        all_coords = self.data['coordinates'].apply(pd.Series).stack().reset_index(drop=True)            
+        all_coords = self.data['coordinates'].apply(pd.Series).stack().reset_index(drop=True)
         lat, lon = zip(*all_coords)
         center = [median(lat), median(lon)]
         return center

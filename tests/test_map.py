@@ -37,7 +37,6 @@ def test_coords_by_type(split_by_type, expected, example_activities):
     coords = m.coordinates_by_type()
     diff = set(coords.keys()) ^ set(expected)
     assert not diff
-    
 def test_heatmap(example_map):
     example_map.create_heatmap()
     assert glob.glob('*_activity_heatmap.html')

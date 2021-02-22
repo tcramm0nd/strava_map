@@ -1,10 +1,11 @@
-from . import stravauth
-import requests
+import datetime as dt
 import urllib
-import json
+
 import pandas as pd
 import polyline
-import datetime as dt
+import requests
+
+from . import stravauth
 
 class ActivityDB():
     def __init__(self, data=None, fetch=False, filename=None):
@@ -20,8 +21,8 @@ class ActivityDB():
         if not self._data.empty:
             if 'coordinates' not in self._data.columns and 'map' in self._data.columns:
                 self._data['coordinates'] = self._data['map'].apply(
-                    lambda x: self._convert_to_coords(x)) 
-            
+                    lambda x: convert_to_coords(x))
+                
             self._data.dropna(subset=['coordinates'])
         
             if 'date' not in self._data.columns:
@@ -57,15 +58,8 @@ class ActivityDB():
             
         print(f'Retrieved {len(activity_list)} total activities')
         
-        return activity_list 
-        
+        return activity_list
 
-    def _convert_to_coords(self, map_data):
-        encoded_polyline = map_data['summary_polyline']
-        if encoded_polyline:
-            decoded_polyline = polyline.decode(encoded_polyline)
-            coords = [list(c) for c in decoded_polyline]
-            return coords
     def save(self, path=None, filename=None):
         """Saves downloaded activity data as a JSON file
         Args:
@@ -78,3 +72,10 @@ class ActivityDB():
             filename = path + filename
 
         self.data.to_json(filename)
+
+def convert_to_coords(map_data):
+    encoded_polyline = map_data['summary_polyline']
+    if encoded_polyline:
+        decoded_polyline = polyline.decode(encoded_polyline)
+        coords = [list(c) for c in decoded_polyline]
+        return coords
