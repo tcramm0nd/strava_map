@@ -15,11 +15,26 @@ class ActivityDB():
         elif filename:
             self.data = pd.read_json(filename)
         else:
+<<<<<<< Updated upstream
             self.data = pd.DataFrame()
         
         # if 'coords' not in self.data.columns and 'map' in self.data.columns:
         #     self.data['coords'] = self.data['map'].apply(
         #         lambda x: self._convert_to_coords(x)) 
+=======
+            self._data = pd.DataFrame()
+
+        if not self._data.empty:
+            if 'coordinates' not in self._data.columns:
+                self._data['coordinates'] = self._data['map'].apply(
+                    lambda x: self._convert_to_coords(x)) 
+            
+            if 'date' not in self._data.columns:
+                self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
+                
+            self.data = self._data[['name', 'date', 'type', 'coordinates']]
+            self._data.dropna(subset=['coordinates'])
+>>>>>>> Stashed changes
     
     def fetch(self, client_id=None, client_secret=None, per_page=100):
         client = stravauth.Client(client_id=client_id, client_secret=client_secret)
@@ -49,8 +64,7 @@ class ActivityDB():
             
         print(f'Retrieved {len(activity_list)} total activities')
         
-        return activity_list 
-        
+        return activity_list
 
     def _convert_to_coords(self, map_data):
         encoded_polyline = map_data['summary_polyline']
