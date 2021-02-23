@@ -5,6 +5,7 @@ from statistics import median
 import folium
 import pandas as pd
 from folium.plugins import HeatMap
+import simplekml
 
 class Map():
     """A collection of Strava activity data."""
@@ -12,7 +13,8 @@ class Map():
                  end_date=None, heatmap=True, kml=False):
         
         self.data = activity_db.data
-        
+        self.data.dropna(subset=['coordinates'], inplace=True)
+
         # set the activity types
         if activity_types == 'All':
             self.activity_types = pd.unique(self.data['type'])
@@ -28,6 +30,7 @@ class Map():
         self.heatmap = folium.Map(location=self.center,
                 tiles='Stamen Toner',
                 zoom_start=14)
+
         
     def create_heatmap(self):
         """Creates a heatmap of Strava activity data
@@ -36,14 +39,10 @@ class Map():
                 to include in the heatmap. Defaults to 'All'.
         """        
                 
-        heatmap_coordinates = self.coordinates_by_type()
+        heatmap_coordinates = self._coordinates_by_type()
         gradients = self._generate_gradients()
         for a_type, coords in heatmap_coordinates.items():
             feature_group = folium.FeatureGroup(name=a_type, show=True)
-            # if a_type in gradients.keys():
-            #     gradient = gradients[a_type]
-            # else:
-            #     gradient = {0: 'white', 1: 'lawngreen'}
             gradient = gradients[a_type]
             feature_group.add_child(HeatMap(coords, radius=7, blur=5, gradient=gradient))
             self.heatmap.add_child(feature_group)
@@ -53,8 +52,22 @@ class Map():
         filename = str(dt.date.today()) + str(self.activity_types) + '_activity_heatmap.html'
         self.heatmap.save(filename)
         webbrowser.open(filename)
+        
+    def create_kml(self):
+        kml = simplekml.Kml(open=1)
+        # self.data['kml_linestring'] = kml.newlinestring(name=self.data['name'].str, coords=self.data['coordinates'])
+        # self.data['kml_linestring'].coords = ]
+        # l = kml.newlinestring(name='t1')
+        # l.coords = [(40.48681, -79.97101), (40.48686, -79.97073)]
+        for i, activity in self.data.iterrows():
+            coords = [tuple(reversed(c)) for c in activity['coordinates']]
+            kml.newlinestring(name=activity['name'], coords=coords)
+            
+        filename = str(dt.date.today()) + str(self.activity_types) + '_activity_kml.kml'
 
-    def coordinates_by_type(self):
+        kml.save(filename)
+
+    def _coordinates_by_type(self):
         """Processes the coordinates for use.
         """     
         if self._split:
@@ -82,10 +95,10 @@ class Map():
                          {0: 'white', .9: 'maroon', 1:'red'}
                          ]
         gradients = {}
-        frequency = self.data.groupby('type').count()
+        frequency = self.data['type'].value_counts()
         g_index = 0
         for i in frequency.index:
-            if g_index <= len(gradient_list):
+            if g_index < len(gradient_list):
                 gradients[i] = gradient_list[g_index]
                 g_index +=1
             else:

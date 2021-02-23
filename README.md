@@ -18,7 +18,6 @@ or run directly from a cloned repo
 git clone https://github.com/tcramm0nd/strava_map.git
 ```
 
-
 ## Example
 
 ```python

@@ -5,18 +5,23 @@ import urllib
 import webbrowser
 
 import requests
-from loguru import logger
 
 
 class Client():
-    """Creates a Strava API Client
-    """
+    """Creates a Strava API Client"""
+    
     def __init__(self, client_id=None, client_secret=None):
+        """Initializes a Strva API Client
+
+        Args:
+            client_id (int, optional): Client ID provided by Strava for your API application. Defaults to None.
+            client_secret (str, optional): Client Secret provided by Strava for your API application. Defaults to None.
+        """        
+        
         self.client_id = client_id
         self.client_secret = client_secret
         if os.path.isfile('.credentials.json'):
             self.read_creds()
-            logger.debug('Loaded Credentials')
             if self.expires_at < dt.datetime.timestamp(dt.datetime.now()):
                 self.refresh()
         else:
@@ -37,6 +42,7 @@ class Client():
                 acknowledge the request, or automaticaly pass through if the app
                 is already authorized. Defaults to 'auto'.
         """
+        
         if not (self.client_id or self.client_secret):
             self.client_id = int(input('Enter Client ID: '))
             self.client_secret = input('Enter Client Secret: ')
@@ -62,8 +68,8 @@ class Client():
         self.write_creds()
 
     def refresh(self):
-        """Refreshes the Bearer Token if the token has expired
-        """
+        """Refreshes the Bearer Token if the token has expired."""
+        
         if self.access_token:
             del self.access_token
         self.refresh_params = {"client_id": self.client_id,
@@ -75,8 +81,8 @@ class Client():
         self.write_creds()
             
     def write_creds(self):
-        """Writes Strava authorization info to a credentials JSON
-        """
+        """Writes Strava authorization info to a credentials JSON"""
+        
         self.credentials = self.r.json()
         self.access_token = self.credentials['access_token']
 

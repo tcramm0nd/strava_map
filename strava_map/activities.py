@@ -21,10 +21,7 @@ class ActivityDB():
         if not self._data.empty:
             if 'coordinates' not in self._data.columns and 'map' in self._data.columns:
                 self._data['coordinates'] = self._data['map'].apply(
-                    lambda x: convert_to_coords(x))
-                
-            self._data.dropna(subset=['coordinates'])
-        
+                    lambda x: convert_to_coords(x))        
             if 'date' not in self._data.columns:
                 self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
             self.data = self._data[['name', 'date', 'type', 'coordinates']]
@@ -77,5 +74,5 @@ def convert_to_coords(map_data):
     encoded_polyline = map_data['summary_polyline']
     if encoded_polyline:
         decoded_polyline = polyline.decode(encoded_polyline)
-        coords = [list(c) for c in decoded_polyline]
-        return coords
+        # coords = [list(c) for c in decoded_polyline]
+        return decoded_polyline

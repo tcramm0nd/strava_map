@@ -34,9 +34,14 @@ def test_activity_types(activity_types, expected, example_activities):
                                                    (False,['All'])])
 def test_coords_by_type(split_by_type, expected, example_activities):
     m = Map(example_activities, split_by_type=split_by_type)
-    coords = m.coordinates_by_type()
+    coords = m._coordinates_by_type()
     diff = set(coords.keys()) ^ set(expected)
     assert not diff
 def test_heatmap(example_map):
     example_map.create_heatmap()
     assert glob.glob('*_activity_heatmap.html')
+    
+@pytest.mark.kml
+def test_kml(example_map):
+    example_map.create_kml()
+    assert glob.glob('*.kml')
