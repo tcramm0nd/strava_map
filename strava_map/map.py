@@ -9,20 +9,24 @@ import simplekml
 
 class Map():
     """A collection of Strava activity data."""
+    
     def __init__(self, activity_db, activity_types='All', split_by_type=True, start_date=None,
                  end_date=None, heatmap=True, kml=False):
         
         self.data = activity_db.data
         self.data.dropna(subset=['coordinates'], inplace=True)
-
-        # set the activity types
-        if activity_types == 'All':
-            self.activity_types = pd.unique(self.data['type'])
-        elif isinstance(activity_types, str):
-            self.activity_types = [activity_types]
-        else:
-            self.activity_types = activity_types
         
+        _all_activity_types = set(pd.unique(self.data['type']))
+        if isinstance(activity_types, str):
+                activity_types = [activity_types]
+
+        if set(activity_types).issubset(_all_activity_types):
+            self.activity_types = activity_types
+            self.activity_str = "_".join(self.activity_types)
+        else:
+            self.activity_types = _all_activity_types
+            self.activity_str = 'All'
+            
         self._split = split_by_type
         
         self.center = self._center_point()
@@ -31,7 +35,6 @@ class Map():
                 tiles='Stamen Toner',
                 zoom_start=14)
 
-        
     def create_heatmap(self):
         """Creates a heatmap of Strava activity data
         Args:
@@ -49,21 +52,21 @@ class Map():
             
         self.heatmap.add_child(folium.map.LayerControl())
                 
-        filename = str(dt.date.today()) + str(self.activity_types) + '_activity_heatmap.html'
+        filename = "_".join([str(dt.date.today()),
+                            self.activity_str,
+                            'activities.html'])
         self.heatmap.save(filename)
         webbrowser.open(filename)
         
     def create_kml(self):
         kml = simplekml.Kml(open=1)
-        # self.data['kml_linestring'] = kml.newlinestring(name=self.data['name'].str, coords=self.data['coordinates'])
-        # self.data['kml_linestring'].coords = ]
-        # l = kml.newlinestring(name='t1')
-        # l.coords = [(40.48681, -79.97101), (40.48686, -79.97073)]
-        for i, activity in self.data.iterrows():
+        for _, activity in self.data.iterrows():
             coords = [tuple(reversed(c)) for c in activity['coordinates']]
             kml.newlinestring(name=activity['name'], coords=coords)
             
-        filename = str(dt.date.today()) + str(self.activity_types) + '_activity_kml.kml'
+        filename = "_".join([str(dt.date.today()),
+                            self.activity_str,
+                            'activities.kml'])
 
         kml.save(filename)
 
@@ -104,4 +107,9 @@ class Map():
             else:
                 gradients[i] = {0:'white', 1:'black'}
         return gradients
-    
+
+    def _file_namer(self, file_type):
+        date = str(dt.date.today())
+        file_type = file_type
+        activities = "_".join(self.activity_types)
+        return "_".join([date,activities, file_type])

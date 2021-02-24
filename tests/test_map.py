@@ -8,7 +8,6 @@ import glob
 data = [{'name': 'Afternoon Run', 'type': 'Run', 'date': '2021-02-11', 'coordinates': [[40.48681, -79.97101], [40.48686, -79.97073], [40.48685, -79.97048]]},
          {'name': 'Afternoon Ride', 'type': 'Ride', 'date': '2021-02-12', 'coordinates': [[40.46681, -79.97301], [40.4886, -79.9073], [40.124, -79.049]]}]
 
-
 @pytest.fixture
 def example_activities():
     return ActivityDB(data=data)
@@ -23,9 +22,11 @@ def test_map_center(example_activities):
     m = Map(example_activities)
     assert m.center == [40.48683, -79.970605]
 @pytest.mark.parametrize('activity_types,expected',
-                         [('All',['Run', 'Ride']),
+                         [
+                             ('All',['Run', 'Ride']),
                           ('Run', ['Run']),
-                          (['Run', 'Ride'],['Run', 'Ride'])])
+                          (['Run', 'Ride'],['Run', 'Ride'])
+                          ])
 def test_activity_types(activity_types, expected, example_activities):
     m = Map(example_activities, activity_types=activity_types)
     diff = set(m.activity_types) ^ set(expected)
@@ -39,9 +40,8 @@ def test_coords_by_type(split_by_type, expected, example_activities):
     assert not diff
 def test_heatmap(example_map):
     example_map.create_heatmap()
-    assert glob.glob('*_activity_heatmap.html')
+    assert glob.glob('*activities.html')
     
-@pytest.mark.kml
 def test_kml(example_map):
     example_map.create_kml()
     assert glob.glob('*.kml')
