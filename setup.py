@@ -22,7 +22,6 @@ setup(
     ],
     packages=find_packages(),
     install_requires=['folium>=0.12.1',
-                      'loguru==0.5.3',
                       'pandas>=1.2.1',
                       'polyline>=1.4.0'
                       ],

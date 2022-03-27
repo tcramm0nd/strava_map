@@ -1,6 +1,11 @@
 import pytest
 from strava_map import ActivityDB
 import glob
+import os
+
+CLIENT_ID = os.getenv('CLIENT_ID')
+
+
 @pytest.fixture
 def required_response_fields():
     return set(('name', 'start_date', 'type', 'map'))
