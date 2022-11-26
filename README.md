@@ -1,4 +1,5 @@
 # strava_map
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0504dabd5aa2478eb8e9042cd804c0b0)](https://app.codacy.com/gh/tcramm0nd/strava_map?utm_source=github.com&utm_medium=referral&utm_content=tcramm0nd/strava_map&utm_campaign=Badge_Grade_Settings)
 [![PyPI](https://img.shields.io/pypi/v/strava-map)](https://pypi.org/project/strava-map/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/strava-map)](https://pypi.org/project/strava-map/)
 [![Codacy grade](https://img.shields.io/codacy/grade/867cdf362b5d4470951f2da590356910)](https://www.codacy.com/gh/tcramm0nd/strava_map)
