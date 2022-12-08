@@ -48,3 +48,8 @@ This will generate a map with different activity types coded as different colors
 ```python
 m.save_(path='path/to/directory/', filename='my_strava_activities')
 ```
+
+## To Do
+[ ] refactor Activity DB to be geoseries (optional; could also go in Map)
+[ ] add get/set to Activity DB
+[ ] split explorer class up
