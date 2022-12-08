@@ -14,10 +14,10 @@ class Client():
         """Initializes a Strva API Client
 
         Args:
-            client_id (int, optional): Client ID provided by Strava for your API application. Defaults to None.
+            client_id (int, optional): Client ID provided by Strava for the API. Defaults to None.
             client_secret (str, optional): Client Secret provided by Strava for your API application. Defaults to None.
-        """        
-        
+        """
+
         self.client_id = client_id
         self.client_secret = client_secret
         if os.path.isfile('.credentials.json'):
@@ -26,7 +26,7 @@ class Client():
                 self.refresh()
         else:
             self.authorize()
-            
+
     def authorize(self, response_type='code',
                   scope='read,profile:read_all,activity:read_all',
                   approval_prompt='auto'
@@ -42,11 +42,11 @@ class Client():
                 acknowledge the request, or automaticaly pass through if the app
                 is already authorized. Defaults to 'auto'.
         """
-        
+
         if not (self.client_id or self.client_secret):
             self.client_id = int(input('Enter Client ID: '))
             self.client_secret = input('Enter Client Secret: ')
-            
+
         self.oauth_params = {"client_id": self.client_id,
                              "response_type": response_type,
                              "redirect_uri": "http://localhost:8000/authorization_successful",
@@ -69,7 +69,7 @@ class Client():
 
     def refresh(self):
         """Refreshes the Bearer Token if the token has expired."""
-        
+
         if self.access_token:
             del self.access_token
         self.refresh_params = {"client_id": self.client_id,
@@ -79,10 +79,10 @@ class Client():
                         }
         self.r = requests.post("https://www.strava.com/oauth/token", self.refresh_params)
         self.write_creds()
-            
+
     def write_creds(self):
         """Writes Strava authorization info to a credentials JSON"""
-        
+
         self.credentials = self.r.json()
         self.access_token = self.credentials['access_token']
 
@@ -91,20 +91,20 @@ class Client():
 
         with open('.credentials.json', 'w+') as f:
             json.dump(self.credentials, f)
-            
+
     def read_creds(self, path=None):
         """Reads Strava Credentials from an existing credentials file.
 
         Args:
             path (str, optional): Path to an existing credentials file. Defaults to None.
         """
-        
+
         # make filename local
         if path:
             self.path = path
         else:
             self.path = '.credentials.json'
-        
+
         with open(self.path) as f:
             self.credentials = json.load(f)
             self.client_id = int(self.credentials['client_id'])

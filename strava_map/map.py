@@ -1,3 +1,4 @@
+"Creates a heatmap"
 import datetime as dt
 import logging
 import webbrowser
@@ -13,8 +14,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 class Map():
-    def __init__(self, activity_db, activity_types='All', split_by_type=True, start_date=None,
-                 end_date=None, heatmap=True, kml=False):
+    def __init__(self, activity_db, activity_types='All', split_by_type=True):
+        # , start_date=None,
+                #  end_date=None, heatmap=True, kml=False
         """Creates a Map of the Activity Data.
 
         Args:
@@ -32,7 +34,7 @@ class Map():
         # try the *[] syntax to simplify this
         _all_activity_types = set(pd.unique(self.data['type']))
         if isinstance(activity_types, str):
-                activity_types = [activity_types]
+            activity_types = [activity_types]
 
         if set(activity_types).issubset(_all_activity_types):
             self.activity_types = activity_types
