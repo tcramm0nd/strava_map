@@ -149,6 +149,5 @@ class Map():
         """
 
         date = str(dt.date.today())
-        file_type = file_type
         activities = "_".join(self.activity_types)
         return "_".join([date,activities, file_type])
