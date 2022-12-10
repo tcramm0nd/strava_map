@@ -9,6 +9,7 @@ import requests
 from . import stravauth
 
 LOGGER_FORMAT = "[%(filename)s - %(funcName)s - %(levelname)s]: %(message)s"
+logging.basicConfig(format=LOGGER_FORMAT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -39,6 +40,7 @@ class ActivityDB():
                     lambda x: convert_to_coords(x))        
             if 'date' not in self._data.columns:
                 self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
+            # should make this configurable!
             self.data = self._data[['name', 'date', 'type', 'coordinates']]
 
     def fetch(self, activity_id=None, per_page=100, include_all_efforts=True,
