@@ -8,7 +8,7 @@ import requests
 
 from . import stravauth
 
-logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s')
+LOGGER_FORMAT = "[%(filename)s - %(funcName)s - %(levelname)s]: %(message)s"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
