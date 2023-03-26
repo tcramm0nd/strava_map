@@ -46,4 +46,5 @@ while test $# -gt 0; do
   esac
 done
 
+# bash <(curl -Ls https://coverage.codacy.com/get.sh)
 # python-codacy-coverage -r cov.xml

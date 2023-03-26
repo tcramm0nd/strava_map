@@ -12,7 +12,7 @@ from folium.plugins import HeatMap
 LOGGER_FORMAT = "[%(filename)s - %(funcName)s - %(levelname)s]: %(message)s"
 logging.basicConfig(format=LOGGER_FORMAT)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 class Map():
     def __init__(self, activity_db, activity_types='All', split_by_type=True):

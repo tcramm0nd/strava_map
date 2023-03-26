@@ -24,11 +24,11 @@ def test_empty_db():
     assert ActivityDB()._data.empty
 
 def test_activity_save(example_activities):
-    example_activities.save(path='tests/')
-    assert glob.glob('tests/*_strava_activities.json')
+    example_activities.save(path='test_data/')
+    assert glob.glob('test_data/*_strava_activities.json')
 
 def test_activity_load(example_activities):
-    assert str(ActivityDB(filename='tests/example.json').data.columns) == str(example_activities.data.columns)
+    assert str(ActivityDB(filename='test_data/example.json').data.columns) == str(example_activities.data.columns)
 
 def test_fetch_single_activity(required_response_fields):
     abd = ActivityDB()

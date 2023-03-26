@@ -11,7 +11,7 @@ from . import stravauth
 LOGGER_FORMAT = "[%(filename)s - %(funcName)s - %(levelname)s]: %(message)s"
 logging.basicConfig(format=LOGGER_FORMAT)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 class ActivityDB():
     def __init__(self, data=None, fetch=False, filename=None, client_id=None, client_secret=None):
@@ -30,6 +30,7 @@ class ActivityDB():
         elif fetch:
             self._data = pd.DataFrame(self.fetch(client_id=client_id, client_secret=client_secret))
         elif filename:
+            logger.info('Loading Activity files %s', filename)
             self._data = pd.read_json(filename)
         else:
             self._data = pd.DataFrame()
@@ -57,6 +58,7 @@ class ActivityDB():
         Returns:
             dict: JSON of activities.
         """
+        logger.debug('Initializing stravauth client')
         self.client = stravauth.Client(client_id=client_id, client_secret=client_secret)
 
         if activity_id:
@@ -74,6 +76,7 @@ class ActivityDB():
             url = 'https://www.strava.com/api/v3/athlete/activities?'
             activity_list = []
             while True:
+                logger.debug("Fetching page %s of activities", page)
                 activities = self._responder(url, activity_params)
                 activity_list.extend(activities)
 

@@ -50,6 +50,9 @@ m.save_(path='path/to/directory/', filename='my_strava_activities')
 ```
 
 ## To Do
-[ ] refactor Activity DB to be geoseries (optional; could also go in Map)
-[ ] add get/set to Activity DB
-[ ] split explorer class up
+- [ ] refactor Activity DB to be geoseries (optional; could also go in Map)
+- [ ] add get/set to Activity DB
+- [ ] split explorer class up
+- [ ] set up webhooks
+- [ ] set up activity db to append a new activity
+- [ ] set up explorer to run calculation on a new activity
