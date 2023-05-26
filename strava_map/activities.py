@@ -8,9 +8,10 @@ import requests
 
 from . import stravauth
 
-logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s')
+LOGGER_FORMAT = "[%(filename)s - %(funcName)s - %(levelname)s]: %(message)s"
+logging.basicConfig(format=LOGGER_FORMAT)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 class ActivityDB():
     def __init__(self, data=None, fetch=False, filename=None, client_id=None, client_secret=None):
@@ -29,6 +30,7 @@ class ActivityDB():
         elif fetch:
             self._data = pd.DataFrame(self.fetch(client_id=client_id, client_secret=client_secret))
         elif filename:
+            logger.info('Loading Activity files %s', filename)
             self._data = pd.read_json(filename)
         else:
             self._data = pd.DataFrame()
@@ -36,9 +38,10 @@ class ActivityDB():
         if not self._data.empty:
             if 'coordinates' not in self._data.columns and 'map' in self._data.columns:
                 self._data['coordinates'] = self._data['map'].apply(
-                    lambda x: convert_to_coords(x))        
+                    lambda x: convert_to_coords(x))
             if 'date' not in self._data.columns:
                 self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
+            # should make this configurable!
             self.data = self._data[['name', 'date', 'type', 'coordinates']]
 
     def fetch(self, activity_id=None, per_page=100, include_all_efforts=True,
@@ -55,6 +58,7 @@ class ActivityDB():
         Returns:
             dict: JSON of activities.
         """
+        logger.debug('Initializing stravauth client')
         self.client = stravauth.Client(client_id=client_id, client_secret=client_secret)
 
         if activity_id:
@@ -64,7 +68,6 @@ class ActivityDB():
             return self._responder(url, activity_params)
         else:
             page = 1
-            per_page = per_page
             activity_params = {'access_token': self.client.access_token,
                             'per_page': per_page,
                             'page': page
@@ -72,6 +75,7 @@ class ActivityDB():
             url = 'https://www.strava.com/api/v3/athlete/activities?'
             activity_list = []
             while True:
+                logger.debug("Fetching page %s of activities", page)
                 activities = self._responder(url, activity_params)
                 activity_list.extend(activities)
 
@@ -124,6 +128,8 @@ class ActivityDB():
             filename = path + filename
 
         self.data.to_json(filename)
+    def __getitem__(self, key):
+        return self._data[key]
 
 def convert_to_coords(map_data):
     """Converts Encoded Polyline to coordinates

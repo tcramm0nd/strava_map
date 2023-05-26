@@ -1,3 +1,4 @@
+"Creates a heatmap"
 import datetime as dt
 import logging
 import webbrowser
@@ -8,13 +9,15 @@ import pandas as pd
 import simplekml
 from folium.plugins import HeatMap
 
-logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s')
+LOGGER_FORMAT = "[%(filename)s - %(funcName)s - %(levelname)s]: %(message)s"
+logging.basicConfig(format=LOGGER_FORMAT)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 class Map():
-    def __init__(self, activity_db, activity_types='All', split_by_type=True, start_date=None,
-                 end_date=None, heatmap=True, kml=False):
+    def __init__(self, activity_db, activity_types='All', split_by_type=True):
+        # , start_date=None,
+                #  end_date=None, heatmap=True, kml=False
         """Creates a Map of the Activity Data.
 
         Args:
@@ -32,7 +35,7 @@ class Map():
         # try the *[] syntax to simplify this
         _all_activity_types = set(pd.unique(self.data['type']))
         if isinstance(activity_types, str):
-                activity_types = [activity_types]
+            activity_types = [activity_types]
 
         if set(activity_types).issubset(_all_activity_types):
             self.activity_types = activity_types
@@ -147,6 +150,5 @@ class Map():
         """
 
         date = str(dt.date.today())
-        file_type = file_type
         activities = "_".join(self.activity_types)
         return "_".join([date,activities, file_type])
