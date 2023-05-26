@@ -38,7 +38,7 @@ class ActivityDB():
         if not self._data.empty:
             if 'coordinates' not in self._data.columns and 'map' in self._data.columns:
                 self._data['coordinates'] = self._data['map'].apply(
-                    lambda x: convert_to_coords(x))        
+                    lambda x: convert_to_coords(x))
             if 'date' not in self._data.columns:
                 self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
             # should make this configurable!
@@ -68,7 +68,6 @@ class ActivityDB():
             return self._responder(url, activity_params)
         else:
             page = 1
-            per_page = per_page
             activity_params = {'access_token': self.client.access_token,
                             'per_page': per_page,
                             'page': page
@@ -131,7 +130,6 @@ class ActivityDB():
         self.data.to_json(filename)
     def __getitem__(self, key):
         return self._data[key]
-        
 
 def convert_to_coords(map_data):
     """Converts Encoded Polyline to coordinates

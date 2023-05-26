@@ -4,4 +4,4 @@ from .map import Map
 from .activities import ActivityDB
 from .explorer import Explorer, ROI
 
-__version__ = "0.0.5" 
+__version__ = "0.0.5"
