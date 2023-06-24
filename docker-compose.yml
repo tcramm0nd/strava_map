@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  web:
+    build: .
+    command: python /strava_map//strava_map/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/strava_map
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+  db:
+    image: postgres:15-bullseye
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
+
+volumes:
+  postgres_data:
