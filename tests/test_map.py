@@ -1,4 +1,4 @@
-from strava_map import Map, ActivityDB
+from strava_map_lib import Map, ActivityDB
 import pytest
 import glob
 

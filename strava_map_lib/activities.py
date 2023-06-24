@@ -1,6 +1,8 @@
+"Tools for Activities"
 import datetime as dt
 import logging
-import urllib
+from urllib.parse import urlencode
+from typing import Optional, Union
 
 import pandas as pd
 import polyline
@@ -13,8 +15,12 @@ logging.basicConfig(format=LOGGER_FORMAT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+
 class ActivityDB():
-    def __init__(self, data=None, fetch=False, filename=None, client_id=None, client_secret=None):
+    """Database for holding activities
+    """
+
+    def __init__(self, data: Optional[dict] = None, fetch: bool = False, filename: Optional[str] = None, client_id: Optional[str] = None, client_secret: Optional[str] = None) -> None:
         """Sets up an Activity DB.
 
         Args:
@@ -28,7 +34,8 @@ class ActivityDB():
         if data:
             self._data = pd.DataFrame(data)
         elif fetch:
-            self._data = pd.DataFrame(self.fetch(client_id=client_id, client_secret=client_secret))
+            self._data = pd.DataFrame(self.fetch(
+                client_id=client_id, client_secret=client_secret))
         elif filename:
             logger.info('Loading Activity files %s', filename)
             self._data = pd.read_json(filename)
@@ -38,14 +45,19 @@ class ActivityDB():
         if not self._data.empty:
             if 'coordinates' not in self._data.columns and 'map' in self._data.columns:
                 self._data['coordinates'] = self._data['map'].apply(
-                    lambda x: convert_to_coords(x))
+                    lambda x: self.convert_to_coords(x))
             if 'date' not in self._data.columns:
-                self._data['date'] = self._data['start_date'].str.extract(r'(\d{4}-\d{2}-\d{2})')
+                self._data['date'] = self._data['start_date'].str.extract(
+                    r'(\d{4}-\d{2}-\d{2})')
             # should make this configurable!
             self.data = self._data[['name', 'date', 'type', 'coordinates']]
 
-    def fetch(self, activity_id=None, per_page=100, include_all_efforts=True,
-              client_id=None, client_secret=None):
+    @classmethod
+    def from_file(cls, filename: str):
+        return pd.read_json(filename)
+    
+    def fetch(self, activity_id: Optional[int] = None, per_page: int = 100, include_all_efforts: bool = True,
+              client_id: Optional[str] = None, client_secret: Optional[str] = None) -> Union[list, dict]:
         """Fetches Activity data from Strava.
 
         Args:
@@ -56,10 +68,11 @@ class ActivityDB():
             client_secret (str, optional): Client Secret. Defaults to None.
 
         Returns:
-            dict: JSON of activities.
+            list: JSON of activities.
         """
         logger.debug('Initializing stravauth client')
-        self.client = stravauth.Client(client_id=client_id, client_secret=client_secret)
+        self.client = stravauth.Client(
+            client_id=client_id, client_secret=client_secret)
 
         if activity_id:
             activity_params = {'access_token': self.client.access_token,
@@ -69,9 +82,9 @@ class ActivityDB():
         else:
             page = 1
             activity_params = {'access_token': self.client.access_token,
-                            'per_page': per_page,
-                            'page': page
-                            }
+                               'per_page': per_page,
+                               'page': page
+                               }
             url = 'https://www.strava.com/api/v3/athlete/activities?'
             activity_list = []
             while True:
@@ -89,7 +102,7 @@ class ActivityDB():
 
             return activity_list
 
-    def _responder(self, url, params):
+    def _responder(self, url: str, params: dict) -> dict:
         """Helper to get JSON.
 
         Args:
@@ -103,19 +116,19 @@ class ActivityDB():
             dict: JSON response
         """
 
-        r = requests.get(url + urllib.parse.urlencode(params))
-        if r.ok:
-            return r.json()
+        resp = requests.get(url + urlencode(params), timeout=5)
+        if resp.ok:
+            return resp.json()
         else:
             try:
                 self.client.refresh()
                 params['access_token'] = self.client.access_token
-                r = requests.get(url + urllib.parse.urlencode(params))
-                return r.json()
-            except:
-                raise PermissionError
+                resp = requests.get(url + urlencode(params), timeout=5)
+                return resp.json()
+            except Exception as error:
+                raise PermissionError(error) from error
 
-    def save(self, path=None, filename=None):
+    def save(self, path: Optional[str] = None, filename: Optional[str] = None):
         """Saves the Activity DB
 
         Args:
@@ -128,20 +141,24 @@ class ActivityDB():
             filename = path + filename
 
         self.data.to_json(filename)
-    def __getitem__(self, key):
+
+    def __getitem__(self, key: str):
         return self._data[key]
 
-def convert_to_coords(map_data):
-    """Converts Encoded Polyline to coordinates
+    @staticmethod
+    def convert_to_coords(map_data: dict) -> list:
+        """Converts Encoded Polyline to coordinates
 
-    Args:
-        map_data (dict): Dictionary of Activity Data.
+        Args:
+            map_data (dict): Dictionary of Activity Data.
 
-    Returns:
-        list: Decoded polyline as coordinates list.
-    """
+        Returns:
+            list: Decoded polyline as coordinates list.
+        """
 
-    encoded_polyline = map_data['summary_polyline']
-    if encoded_polyline:
-        decoded_polyline = polyline.decode(encoded_polyline)
-        return decoded_polyline
+        encoded_polyline = map_data['summary_polyline']
+        if encoded_polyline:
+            decoded_polyline = polyline.decode(encoded_polyline)
+            return decoded_polyline
+        else:
+            return []

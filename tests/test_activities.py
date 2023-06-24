@@ -1,5 +1,5 @@
 import pytest
-from strava_map import ActivityDB
+from strava_map_lib import ActivityDB
 import glob
 import os
 

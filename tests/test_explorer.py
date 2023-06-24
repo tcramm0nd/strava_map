@@ -1,5 +1,5 @@
 import pytest
-from strava_map import Explorer, ROI
+from strava_map_lib import Explorer, ROI
 import glob
 import os
 

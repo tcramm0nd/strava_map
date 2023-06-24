@@ -131,7 +131,7 @@ class ROI():
         if roi_type == 'file':
             raw_roi = self._import_roi_file(roi)
         else:
-            pass
+            raise KeyError
 
         self.roi_xmin, self.roi_ymin, self.roi_xmax, self.roi_ymax = raw_roi.total_bounds
         self.approximate_crs = raw_roi.geometry.estimate_utm_crs()
