@@ -1,5 +1,5 @@
 git_root=$(git rev-parse --show-toplevel)
-cd "$git_root/chores/migrations"
+cd "$git_root/strava_map/strava_map_api/migrations"
 
 find ./ -name "*.py" | xargs rm -r
 touch __init__.py

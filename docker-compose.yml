@@ -11,7 +11,8 @@ services:
     depends_on:
       - db
   db:
-    image: postgres:15-bullseye
+    # image: postgres:15-bullseye
+    image: postgis/postgis:15-3.3
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:

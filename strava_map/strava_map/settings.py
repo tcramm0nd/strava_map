@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'strava_map_api',
+    'rest_framework'
+
+    
 ]
 
 MIDDLEWARE = [
@@ -74,9 +78,14 @@ WSGI_APPLICATION = 'strava_map.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        # "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "db",  # set in docker-compose.yml
+        "PORT": 5432,  # default postgres port
     }
 }
 
@@ -121,3 +130,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# GDAL_LIBRARY_PATH = r'/usr/lib/ogdi/libgdal.so'
+
+# from django.contrib.postgres.operations import CreateExtension
+# from django.db import migrations
+
+
+# class Migration(migrations.Migration):
+#     operations = [CreateExtension("postgis")]
