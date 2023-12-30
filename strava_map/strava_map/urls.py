@@ -21,10 +21,10 @@ from strava_map_api import views
 
 router = routers.DefaultRouter()
 router.register(r'activities', views.ActivityView, 'activities')
+router.register(r'activity_points', views.ActivityPointsView, 'activity_points')
+router.register(r'regions_of_interest', views.RegionOfInterestView, 'regions_of_interest')
+router.register(r'ways', views.WayView, 'ways')
 
-try:
-    urlpatterns = [
-        path('admin/', admin.site.urls),
-        path('api/', include(router.urls)),]
-except:
-    urlpatterns = []
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),]

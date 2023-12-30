@@ -3,7 +3,7 @@ version: "3.7"
 services:
   web:
     build: .
-    command: python /strava_map//strava_map/manage.py runserver 0.0.0.0:8000
+    command: python /strava_map/strava_map/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/strava_map
     ports:

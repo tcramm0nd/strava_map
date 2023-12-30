@@ -6,7 +6,7 @@ touch __init__.py
 
 cd $git_root
 
-docker volume rm chores_postgres_data
+docker volume rm strava_map_postgres_data
 docker-compose up -d --build
-docker-compose exec web python manage.py makemigrations
-docker-compose exec web python manage.py migrate
+# docker-compose exec web python strava_map/manage.py makemigrations
+# docker-compose exec web python strava_map/manage.py migrate

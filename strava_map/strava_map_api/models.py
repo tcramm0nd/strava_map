@@ -1,51 +1,45 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 
-from typing import List
-
-import polyline
+# import polyline
 from django.contrib.gis.db import models
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver 
 
 class Activity(models.Model):
     class ActivityType(models.TextChoices):
         RUN = "1", "run"
         BIKE = "2", "bike"
     name = models.CharField()
-    date_time = models.DateTimeField()
+    strava_id = models.BigIntegerField()
+    # full_date_time = models.DateTimeField()
     date = models. DateField()
     time = models.TimeField()
     type = models.CharField(choices=ActivityType.choices)
     distance = models.FloatField()
+    effort = models.IntegerField()
 
-    map = models.CharField()
+    # map = models.CharField()
 
-    path = models.LineStringField()
+    path = models.LineStringField(null=True)
 
     ###
 
-    @property
-    def generate_path(self) -> List:
-        """Converts Encoded Polyline to coordinates
+    # @property
+    # def generate_path(self) -> str:
+    #     if self.map:
+    #         decoded_polyline = polyline.decode(self.map)
+    #         # return decoded_polyline
+    #     else:
+    #         return "LINESTRING()"
 
-        Args:
-            map_data (dict): Dictionary of Activity Data.
+    #     points = ", ".join([f"{p[0]} {p[1]}" for p in decoded_polyline])
+    #     line_string = f"LINESTRING({points})"
+    #     return line_string
 
-        Returns:
-            list: Decoded polyline as coordinates list.
-        """
-
-        # encoded_polyline = self.map['summary_polyline']
-
-        if self.map:
-            decoded_polyline = polyline.decode(self.map)
-            return decoded_polyline
-        else:
-            return []
-
-    def save(self, *args, **kwargs):
-        self.path = self.generate_path
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     self.path = self.generate_path
+    #     super().save(*args, **kwargs)
 
 
 class ActivityPoints(models.Model):
@@ -61,5 +55,12 @@ class RegionOfInterest(models.Model):
 class Way(models.Model):
     name = models.CharField(null=True)
     explored = models.BooleanField(default=False)
-    roi = models.ForeignKey(RegionOfInterest, on_delete=models.CASCADE)
+    roi = models.ForeignKey(
+        RegionOfInterest, on_delete=models.CASCADE, related_name='ways')
     path = models.LineStringField()
+
+
+
+@receiver(post_save, sender=Activity)
+def create_activity_points(sender,instance,**kwargs):
+    pass
